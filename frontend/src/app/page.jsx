@@ -13,8 +13,18 @@ export default function Home() {
   const [behaviour, setBehaviour] = useState('');
   const [averagegrade, setAverageGrade] = useState('');
   const [updateId, setUpdateId] = useState(null);
-
   const [edit, setEdit] = useState(false);
+  const [formSubmitted, setFormSubmitted] = useState(false);
+
+  const getAverageGradeColor = (average) => {
+    if (average >= 85) {
+      return 'text-green-500';
+    } else if (average >= 70) {
+      return 'text-yellow-500';
+    } else {
+      return 'text-red-500';
+    }
+  };
 
   const fetchStudents = async () => {
     const response = await axios.get('http://localhost:5000/api/studentsdb');
@@ -27,6 +37,7 @@ export default function Home() {
 
   const createStudent = async () => {
     try {
+      const average = ((parseFloat(englishgrades) + parseFloat(mathsgrades)) / 2).toFixed(2);
       const response = await axios.post('http://localhost:5000/api/studentsdb', {
         name,
         age,
@@ -34,32 +45,40 @@ export default function Home() {
         mathsgrades,
         teachercomments,
         behaviour,
-        averagegrade,
+        averagegrade: average,
       });
       setStudents([...studentsdb, response.data]);
+      alert(`Welcome aboard! ${name} has been registered.`);
       resetForm();
     } catch (error) {
       console.error('Error creating student:', error);
-      alert('Error creating student. Please contact the site administrator.');
+      alert('Oops! There was a problem adding the student. Please try again later.');
     }
   };
 
   const updateStudent = async () => {
-    const response = await axios.put(`http://localhost:5000/api/studentsdb/${updateId}`, {
-      name,
-      age,
-      englishgrades,
-      mathsgrades,
-      teachercomments,
-      behaviour,
-      averagegrade,
-    });
-    setStudents(studentsdb.map(student => (student.id === updateId ? response.data : student)));
-    resetForm();
+    try {
+      const average = ((parseFloat(englishgrades) + parseFloat(mathsgrades)) / 2).toFixed(2);
+      const response = await axios.put(`http://localhost:5000/api/studentsdb/${updateId}`, {
+        name,
+        age,
+        englishgrades,
+        mathsgrades,
+        teachercomments,
+        behaviour,
+        averagegrade: average,
+      });
+      setStudents(studentsdb.map(student => (student.id === updateId ? response.data : student)));
+      alert(`Changes saved for ${name}.`);
+      resetForm();
+    } catch (error) {
+      console.error('Error updating student:', error);
+      alert('Sorry, we could not update details. Please check your input and try again.');
+    }
   };
 
   const deleteStudent = async (id) => {
-    const studentToDelete = studentsdb.find(student => student.id === id); 
+    const studentToDelete = studentsdb.find(student => student.id === id);
     if (!studentToDelete) {
       alert('Student not found.');
       return;
@@ -67,13 +86,13 @@ export default function Home() {
     try {
       await axios.delete(`http://localhost:5000/api/studentsdb/${id}`);
       setStudents(studentsdb.filter(student => student.id !== id));
-      alert(`${studentToDelete.name} deleted successfully`);
+      alert(`${studentToDelete.name} has been removed from the records`);
     } catch (error) {
       console.error('Error deleting student:', error);
-      alert('Error deleting student. Please contact the site administrator.');
+      alert("We couldn't find the student you were trying to delete. Please refresh and try again.");
     }
   };
-  
+
   const resetForm = () => {
     setName('');
     setAge('');
@@ -83,75 +102,97 @@ export default function Home() {
     setBehaviour('');
     setAverageGrade('');
     setUpdateId(null);
+    setFormSubmitted(false);
   };
 
   const editStudent = (student) => {
-    try {
-      setEdit(true);
-      setName(student.name);
-      setAge(student.age);
-      setEnglishGrades(student.englishgrades);
-      setMathsGrades(student.mathsgrades);
-      setTeacherComments(student.teachercomments);
-      setBehaviour(student.behaviour);
-      setAverageGrade(student.averagegrade);
-      setUpdateId(student.id);
-    } catch (error) {
-      console.error('Error editing student:', error);
-      alert('An error occurred while editing the student. Please try again.');
-    } finally {
-      setEdit(false);
+    setEdit(true);
+    setName(student.name);
+    setAge(student.age);
+    setEnglishGrades(student.englishgrades);
+    setMathsGrades(student.mathsgrades);
+    setTeacherComments(student.teachercomments);
+    setBehaviour(student.behaviour);
+    setAverageGrade(student.averagegrade);
+    setUpdateId(student.id);
+  };
+
+  const handleInvalid = (e) => {
+    e.preventDefault();
+    alert('Please enter only letters (A-Z, a-z) with a maximum of 15 characters.');
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    setFormSubmitted(true); // Set form submitted state to true
+
+    // Check if all fields are filled
+    if (name && age && englishgrades && mathsgrades && teachercomments && behaviour) {
+      updateId ? updateStudent() : createStudent(); // Call create or update function based on updateId
     }
   };
-  
 
   return (
     <div className="bg-teal-700 text-center p-8">
-      <h1 className="text-4xl font-bold text-white mb-8">Asset Insight's Student Management Center 👨‍🎓</h1>
-      
-      <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
-        <thead>
-          <tr className="bg-teal-400 text-white">
-            <th className="px-4 py-3">Name</th>
-            <th className="px-4 py-3">Age</th>
-            <th className="px-4 py-3">English Grades</th>
-            <th className="px-4 py-3">Maths Grades</th>
-            <th className="px-4 py-3">Teacher Comments</th>
-            <th className="px-4 py-3">Behaviour</th>
-            <th className="px-4 py-3">Average Grade</th>
-            <th className="px-4 py-3">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {studentsdb.map(student => (
-            <tr key={student.id} className="border-b hover:bg-gray-100 transition duration-200">
-              <td className="px-4 py-3 font-bold">{student.name}</td>
-              <td className="px-4 py-3">{student.age}</td>
-              <td className="px-4 py-3">{student.englishgrades}</td>
-              <td className="px-4 py-3">{student.mathsgrades}</td>
-              <td className="px-4 py-3">{student.teachercomments}</td>
-              <td className="px-4 py-3">{student.behaviour}</td>
-              <td className="px-4 py-3">{student.averagegrade}</td>
-              <td className="px-4 py-3">
-                <button onClick={() => editStudent(student)} className="text-teal-600 hover:underline">Edit</button>
-                <button onClick={() => deleteStudent(student.id)} className="text-red-600 hover:underline ml-2">Delete</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <h2 className="text-2xl text-gray-800 font-bold mt-10">
-        {updateId ? `Edit a Student - ${studentsdb.find(student => student.id === updateId)?.name}` : 'Add a Student'}
-      </h2>
+  <h1 className="text-4xl font-bold text-white mb-8">Asset Insight's Student Management Center 👨‍🎓</h1>
 
-    <div className="flex flex-wrap justify-center gap-4 mt-4">
+  <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
+    <thead>
+      <tr className="bg-teal-400 text-white">
+        <th className="px-4 py-3">Name</th>
+        <th className="px-4 py-3">Age</th>
+        <th className="px-4 py-3">English Grades</th>
+        <th className="px-4 py-3">Maths Grades</th>
+        <th className="px-4 py-3">Teacher Comments</th>
+        <th className="px-4 py-3">Behaviour</th>
+        <th className="px-4 py-3">Average Grade</th>
+        <th className="px-4 py-3">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {studentsdb.map(student => (
+        <tr key={student.id} className="border-b hover:bg-gray-100 transition duration-200">
+          <td className="px-4 py-3 font-bold">{student.name}</td>
+          <td className="px-4 py-3">{student.age}</td>
+          <td className="px-4 py-3">{student.englishgrades}</td>
+          <td className="px-4 py-3">{student.mathsgrades}</td>
+          <td className="px-4 py-3">{student.teachercomments}</td>
+          <td className="px-4 py-3">{student.behaviour}</td>
+          <td className={`px-4 py-3 ${getAverageGradeColor(student.averagegrade)}`}>{student.averagegrade}</td>
+          <td className="px-4 py-3">
+            <button onClick={() => editStudent(student)} className="text-teal-600 hover:underline">Edit</button>
+            <button onClick={() => deleteStudent(student.id)} className="text-red-600 hover:underline ml-2">Delete</button>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+
+  <h2 className="text-2xl text-gray-800 font-bold mt-10">
+    {updateId ? `Edit a Student - ${studentsdb.find(student => student.id === updateId)?.name}` : 'Add a Student'}
+  </h2>
+
+  <form onSubmit={handleSubmit} className="flex flex-wrap justify-center gap-4 mt-4">
+
+    <div className="relative">
       <input
         type="text"
-        placeholder="Name"
+        placeholder="First Name"
         value={name}
         onChange={(e) => setName(e.target.value)}
         className="p-2 border border-gray-300 rounded-md"
+        maxLength={15} 
+        pattern="[A-Za-z]*"
+        onInvalid={handleInvalid}
       />
+      {formSubmitted && !name && (
+        <p className="absolute left-0 mt-1 text-red-500 text-sm bg-white border border-red-500 p-1 rounded-md shadow-lg z-10">
+          Please enter a name
+        </p>
+      )}
+    </div>
+
+    <div className="relative">
       <select
         value={age}
         onChange={(e) => setAge(e.target.value)}
@@ -161,7 +202,14 @@ export default function Home() {
         <option value="11">11</option>
         <option value="12">12</option>
       </select>
+      {formSubmitted && !age && (
+        <p className="absolute left-0 mt-1 text-red-500 text-sm bg-white border border-red-500 p-1 rounded-md shadow-lg z-10">
+          Please select an age
+        </p>
+      )}
+    </div>
 
+    <div className="relative">
       <input
         type="number"
         placeholder="English Grades"
@@ -169,6 +217,14 @@ export default function Home() {
         onChange={(e) => setEnglishGrades(e.target.value)}
         className="p-2 border border-gray-300 rounded-md"
       />
+      {formSubmitted && !englishgrades && (
+        <p className="absolute left-0 mt-1 text-red-500 text-sm bg-white border border-red-500 p-1 rounded-md shadow-lg z-10">
+          Please enter English grades
+        </p>
+      )}
+    </div>
+
+    <div className="relative">
       <input
         type="number"
         placeholder="Maths Grades"
@@ -176,6 +232,14 @@ export default function Home() {
         onChange={(e) => setMathsGrades(e.target.value)}
         className="p-2 border border-gray-300 rounded-md"
       />
+      {formSubmitted && !mathsgrades && (
+        <p className="absolute left-0 mt-1 text-red-500 text-sm bg-white border border-red-500 p-1 rounded-md shadow-lg z-10">
+          Please enter Maths grades
+        </p>
+      )}
+    </div>
+
+    <div className="relative">
       <input
         type="text"
         placeholder="Teacher Comments"
@@ -183,30 +247,38 @@ export default function Home() {
         onChange={(e) => setTeacherComments(e.target.value)}
         className="p-2 border border-gray-300 rounded-md"
       />
-      <select
-  value={behaviour}
-  onChange={(e) => setBehaviour(e.target.value)}
-  className="p-2 border border-gray-300 rounded-md"
->
-  <option value="" disabled>Attitude to learning</option>
-  <option value="Good">Good</option>
-  <option value="Average">Average</option>
-  <option value="Bad">Bad</option>
-</select>
-      <input
-        type="number"
-        placeholder="Average Grade"
-        value={averagegrade}
-        onChange={(e) => setAverageGrade(e.target.value)}
-        className="p-2 border border-gray-300 rounded-md"
-      />
-      <button 
-        onClick={updateId ? updateStudent : createStudent}
-        className="bg-blue-600 text-white py-2 rounded-md hover:bg-blue-500 transition duration-200"
-      >
-        {updateId ? 'Update Student' : 'Create Student'}
-      </button>
+      {formSubmitted && !teachercomments && (
+        <p className="absolute left-0 mt-1 text-red-500 text-sm bg-white border border-red-500 p-1 rounded-md shadow-lg z-10">
+          Please enter comments
+        </p>
+      )}
     </div>
-  </div>
-);
+
+    <div className="relative">
+      <select
+        value={behaviour}
+        onChange={(e) => setBehaviour(e.target.value)}
+        className="p-2 border border-gray-300 rounded-md"
+      >
+        <option value="" disabled>Select Behaviour</option>
+        <option value="Good">Good</option>
+        <option value="Average">Average</option>
+        <option value="Poor">Poor</option>
+      </select>
+      {formSubmitted && !behaviour && (
+        <p className="absolute left-0 mt-1 text-red-500 text-sm bg-white border border-red-500 p-1 rounded-md shadow-lg z-10">
+          Please select behaviour
+        </p>
+      )}
+    </div>
+
+    <button
+      type="submit"
+      className="bg-teal-500 text-white px-4 py-2 rounded-md hover:bg-teal-600"
+    >
+      {updateId ? 'Update Student' : 'Add Student'}
+    </button>
+  </form>
+</div>
+  );
 }
