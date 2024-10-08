@@ -133,7 +133,7 @@ export default function Home() {
   };
 
   return (
-    <div className="bg-teal-700 text-center p-8">
+    <div className="bg-teal-700 text-center p-8 min-h-screen">
   <h1 className="text-4xl font-bold text-white mb-8">Asset Insight's Student Management Center 👨‍🎓</h1>
 
   <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
