@@ -1,33 +1,33 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 export default function Home() {
   const [studentsdb, setStudents] = useState([]);
-  const [name, setName] = useState('');
-  const [age, setAge] = useState('');
-  const [englishgrades, setEnglishGrades] = useState('');
-  const [mathsgrades, setMathsGrades] = useState('');
-  const [teachercomments, setTeacherComments] = useState('');
-  const [behaviour, setBehaviour] = useState('');
-  const [averagegrade, setAverageGrade] = useState('');
+  const [name, setName] = useState("");
+  const [age, setAge] = useState("");
+  const [englishgrades, setEnglishGrades] = useState("");
+  const [mathsgrades, setMathsGrades] = useState("");
+  const [teachercomments, setTeacherComments] = useState("");
+  const [behaviour, setBehaviour] = useState("");
+  const [averagegrade, setAverageGrade] = useState("");
   const [updateId, setUpdateId] = useState(null);
   const [edit, setEdit] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
 
   const getAverageGradeColor = (average) => {
     if (average >= 85) {
-      return 'text-green-500';
+      return "text-green-500";
     } else if (average >= 70) {
-      return 'text-yellow-500';
+      return "text-yellow-500";
     } else {
-      return 'text-red-500';
+      return "text-red-500";
     }
   };
 
   const fetchStudents = async () => {
-    const response = await axios.get('http://localhost:5000/api/studentsdb');
+    const response = await axios.get("http://localhost:5000/api/studentsdb");
     setStudents(response.data);
   };
 
@@ -38,7 +38,7 @@ export default function Home() {
   const createStudent = async () => {
     try {
       const average = ((parseFloat(englishgrades) + parseFloat(mathsgrades)) / 2).toFixed(2);
-      const response = await axios.post('http://localhost:5000/api/studentsdb', {
+      const response = await axios.post("http://localhost:5000/api/studentsdb", {
         name,
         age,
         englishgrades,
@@ -51,8 +51,8 @@ export default function Home() {
       alert(`Welcome aboard! ${name} has been registered.`);
       resetForm();
     } catch (error) {
-      console.error('Error creating student:', error);
-      alert('Oops! There was a problem adding the student. Please try again later.');
+      console.error("Error creating student:", error);
+      alert("Oops! There was a problem adding the student. Please try again later.");
     }
   };
 
@@ -72,15 +72,15 @@ export default function Home() {
       alert(`Changes saved for ${name}.`);
       resetForm();
     } catch (error) {
-      console.error('Error updating student:', error);
-      alert('Sorry, we could not update details. Please check your input and try again.');
+      console.error("Error updating student:", error);
+      alert("Sorry, we could not update details. Please check your input and try again.");
     }
   };
 
   const deleteStudent = async (id) => {
     const studentToDelete = studentsdb.find(student => student.id === id);
     if (!studentToDelete) {
-      alert('Student not found.');
+      alert("Student not found.");
       return;
     }
     try {
@@ -88,19 +88,19 @@ export default function Home() {
       setStudents(studentsdb.filter(student => student.id !== id));
       alert(`${studentToDelete.name} has been removed from the records`);
     } catch (error) {
-      console.error('Error deleting student:', error);
-      alert("We couldn't find the student you were trying to delete. Please refresh and try again.");
+      console.error("Error deleting student:", error);
+      alert("We couldn\t find the student you were trying to delete. Please refresh and try again.");
     }
   };
 
   const resetForm = () => {
-    setName('');
-    setAge('');
-    setEnglishGrades('');
-    setMathsGrades('');
-    setTeacherComments('');
-    setBehaviour('');
-    setAverageGrade('');
+    setName("");
+    setAge("");
+    setEnglishGrades("");
+    setMathsGrades("");
+    setTeacherComments("");
+    setBehaviour("");
+    setAverageGrade("");
     setUpdateId(null);
     setFormSubmitted(false);
   };
@@ -119,7 +119,7 @@ export default function Home() {
 
   const handleInvalid = (e) => {
     e.preventDefault();
-    alert('Please enter only letters (A-Z, a-z) with a maximum of 15 characters.');
+    alert("Please enter only letters (A-Z, a-z) with a maximum of 15 characters.");
   };
 
   const handleSubmit = (event) => {
@@ -134,7 +134,7 @@ export default function Home() {
 
   return (
     <div className="bg-teal-700 text-center p-8 min-h-screen">
-  <h1 className="text-4xl font-bold text-white mb-8">Asset Insight's Student Management Center 👨‍🎓</h1>
+  <h1 className="text-4xl font-bold text-white mb-8">Asset Insights Student Management Center 👨‍🎓</h1>
 
   <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
     <thead>
@@ -169,7 +169,7 @@ export default function Home() {
   </table>
 
   <h2 className="text-2xl text-gray-800 font-bold mt-10">
-    {updateId ? `Edit a Student - ${studentsdb.find(student => student.id === updateId)?.name}` : 'Add a Student'}
+    {updateId ? `Edit a Student - ${studentsdb.find(student => student.id === updateId)?.name}` : "Add a Student"}
   </h2>
 
   <form onSubmit={handleSubmit} className="flex flex-wrap justify-center gap-4 mt-4">
@@ -276,7 +276,7 @@ export default function Home() {
       type="submit"
       className="bg-teal-500 text-white px-4 py-2 rounded-md hover:bg-teal-600"
     >
-      {updateId ? 'Update Student' : 'Add Student'}
+      {updateId ? "Update Student" : "Add Student"}
     </button>
   </form>
 </div>
