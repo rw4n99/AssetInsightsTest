@@ -17,7 +17,7 @@ export default function Home() {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const API_URL = process.env.API_URL || "http://localhost:5000";
+  const API_URL = process.env.API_URL;
 
   const getAverageGradeColor = (average) => {
     if (average >= 85) {
