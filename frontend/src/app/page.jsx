@@ -15,6 +15,7 @@ export default function Home() {
   const [updateId, setUpdateId] = useState(null);
   const [edit, setEdit] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const getAverageGradeColor = (average) => {
     if (average >= 85) {
@@ -27,10 +28,18 @@ export default function Home() {
   };
 
   const fetchStudents = async () => {
-    const response = await axios.get("http://localhost:5000/api/studentsdb");
-    setStudents(response.data);
+    setLoading(true);
+    try {
+      const response = await axios.get("http://localhost:5000/api/studentsdb");
+      setStudents(response.data);
+    } catch (error) {
+      console.error("Error fetching students:", error);
+      alert("Oops! There was a problem fetching the students. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
   };
-
+  
   useEffect(() => {
     fetchStudents();
   }, []);
@@ -136,37 +145,49 @@ export default function Home() {
     <div className="bg-teal-700 text-center p-8 min-h-screen">
   <h1 className="text-4xl font-bold text-white mb-8">Asset Insights Student Management Center 👨‍🎓</h1>
 
-  <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
-    <thead>
-      <tr className="bg-teal-400 text-white">
-        <th className="px-4 py-3">Name</th>
-        <th className="px-4 py-3">Age</th>
-        <th className="px-4 py-3">English Grades</th>
-        <th className="px-4 py-3">Maths Grades</th>
-        <th className="px-4 py-3">Teacher Comments</th>
-        <th className="px-4 py-3">Behaviour</th>
-        <th className="px-4 py-3">Average Grade</th>
-        <th className="px-4 py-3">Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {studentsdb.map(student => (
-        <tr key={student.id} className="border-b hover:bg-gray-100 transition duration-200">
-          <td className="px-4 py-3 font-bold">{student.name}</td>
-          <td className="px-4 py-3">{student.age}</td>
-          <td className="px-4 py-3">{student.englishgrades}</td>
-          <td className="px-4 py-3">{student.mathsgrades}</td>
-          <td className="px-4 py-3">{student.teachercomments}</td>
-          <td className="px-4 py-3">{student.behaviour}</td>
-          <td className={`px-4 py-3 ${getAverageGradeColor(student.averagegrade)}`}>{student.averagegrade}</td>
-          <td className="px-4 py-3">
-            <button onClick={() => editStudent(student)} className="text-teal-600 hover:underline">Edit</button>
-            <button onClick={() => deleteStudent(student.id)} className="text-red-600 hover:underline ml-2">Delete</button>
-          </td>
+  <div>
+  {loading ? (
+    <h1 className="text-4xl">Student data is loading. Please wait...</h1>
+  ) : (
+    <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
+      <thead>
+        <tr className="bg-teal-400 text-white">
+          <th className="px-4 py-3">Name</th>
+          <th className="px-4 py-3">Age</th>
+          <th className="px-4 py-3">English Grades</th>
+          <th className="px-4 py-3">Maths Grades</th>
+          <th className="px-4 py-3">Teacher Comments</th>
+          <th className="px-4 py-3">Behaviour</th>
+          <th className="px-4 py-3">Average Grade</th>
+          <th className="px-4 py-3">Actions</th>
         </tr>
-      ))}
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        {studentsdb.map(student => (
+          <tr key={student.id} className="border-b hover:bg-gray-100 transition duration-200">
+            <td className="px-4 py-3 font-bold">{student.name}</td>
+            <td className="px-4 py-3">{student.age}</td>
+            <td className="px-4 py-3">{student.englishgrades}</td>
+            <td className="px-4 py-3">{student.mathsgrades}</td>
+            <td className="px-4 py-3">{student.teachercomments}</td>
+            <td className="px-4 py-3">{student.behaviour}</td>
+            <td className={`px-4 py-3 ${getAverageGradeColor(student.averagegrade)}`}>
+              {student.averagegrade}
+            </td>
+            <td className="px-4 py-3">
+              <button onClick={() => editStudent(student)} className="text-teal-600 hover:underline">
+                Edit
+              </button>
+              <button onClick={() => deleteStudent(student.id)} className="text-red-600 hover:underline ml-2">
+                Delete
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )}
+</div>
 
   <h2 className="text-2xl text-gray-800 font-bold mt-10">
     {updateId ? `Edit a Student - ${studentsdb.find(student => student.id === updateId)?.name}` : "Add a Student"}
