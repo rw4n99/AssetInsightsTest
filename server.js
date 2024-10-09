@@ -52,7 +52,7 @@ const startServer = async () => {
     try {
         await initialiseDb();
         app.listen(port, () => {
-            console.log(`Server is running on http://localhost:${port}`);
+            console.log(`Success! The server is running on http://localhost:${port} . Please click here to access the front end https://student-management-center.onrender.com/`);
         });
     } catch (error) {
         console.log('Error starting server:', error);
