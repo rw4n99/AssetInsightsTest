@@ -11,10 +11,10 @@ npm install && node server.js
 
 This will initialise the SQL database, currently hosted on Render, and make it ready to use.
 
-2. Open a new terminal, and change directory to /frontend. Ttpe this into terminal:
-cd frontend && npm install && npm run build
+2. You should get a success message! This means the database is now ready to interact with! Follow this link to access the site:
+   https://student-management-center.onrender.com/
 
-Click on the localhost link provided in the terminal, and complete the tasks below!
+**Please note** that I have left the .env file accessible. While this should never normally be done for security reasons, I have done so for this demo version for ease of setup. 
 
 ## Tasks
 
