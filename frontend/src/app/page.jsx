@@ -314,6 +314,7 @@ const deleteStudent = async (id) => {
         value={teachercomments}
         onChange={(e) => setTeacherComments(e.target.value)}
         className="p-2 border border-gray-300 rounded-md"
+        maxLength={30}
       />
       {formSubmitted && !teachercomments && (
         <p className="absolute left-0 mt-1 text-red-500 text-sm bg-white border border-red-500 p-1 rounded-md shadow-lg z-10">
