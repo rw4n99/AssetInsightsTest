@@ -17,8 +17,6 @@ export default function Home() {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const API_URL = process.env.API_URL;
-
   const getAverageGradeColor = (average) => {
     if (average >= 85) {
       return "text-green-500";
@@ -29,7 +27,9 @@ export default function Home() {
     }
   };
 
-  const fetchStudents = async () => {
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+const fetchStudents = async () => {
     setLoading(true);
     try {
       const response = await axios.get(`${API_URL}/api/studentsdb`);
@@ -40,16 +40,12 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  };
-  
-  useEffect(() => {
-    fetchStudents();
-  }, []);
+};
 
-  const createStudent = async () => {
+const createStudent = async () => {
     try {
         const average = ((parseFloat(englishgrades) + parseFloat(mathsgrades)) / 2).toFixed(2);
-        const response = await axios.post(`${process.env.API_URL}/api/studentsdb`, {
+        const response = await axios.post(`${API_URL}/api/studentsdb`, {
             name,
             age,
             englishgrades,
@@ -70,7 +66,7 @@ export default function Home() {
 const updateStudent = async () => {
     try {
         const average = ((parseFloat(englishgrades) + parseFloat(mathsgrades)) / 2).toFixed(2);
-        const response = await axios.put(`${process.env.API_URL}/api/studentsdb/${updateId}`, {
+        const response = await axios.put(`${API_URL}/api/studentsdb/${updateId}`, {
             name,
             age,
             englishgrades,
@@ -95,7 +91,7 @@ const deleteStudent = async (id) => {
         return;
     }
     try {
-        await axios.delete(`${process.env.API_URL}/api/studentsdb/${id}`);
+        await axios.delete(`${API_URL}/api/studentsdb/${id}`);
         setStudents(studentsdb.filter(student => student.id !== id));
         alert(`${studentToDelete.name} has been removed from the records`);
     } catch (error) {
@@ -139,7 +135,7 @@ const deleteStudent = async (id) => {
 
     // Check if all fields are filled
     if (name && age && englishgrades && mathsgrades && teachercomments && behaviour) {
-      updateId ? updateStudent() : createStudent(); // Call create or update function based on updateId
+      updateId ? updateStudent() : createStudent();
     }
   };
 
