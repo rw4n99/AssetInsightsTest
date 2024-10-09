@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 export default function Home() {
+
+  //State management for variables
   const [studentsdb, setStudents] = useState([]);
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
@@ -17,6 +19,7 @@ export default function Home() {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  //Assigning colors to average grades
   const getAverageGradeColor = (average) => {
     if (average >= 85) {
       return "text-green-500";
@@ -27,8 +30,10 @@ export default function Home() {
     }
   };
 
+  //API URL
   const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
+  //Fetching students from the database
 const fetchStudents = async () => {
     setLoading(true);
     try {
@@ -42,6 +47,12 @@ const fetchStudents = async () => {
     }
 };
 
+//UseEffect hook to fetch students
+useEffect(() => {
+  fetchStudents();
+}, []);
+
+//Creating a new student
 const createStudent = async () => {
     try {
         const average = ((parseFloat(englishgrades) + parseFloat(mathsgrades)) / 2).toFixed(2);
@@ -63,6 +74,7 @@ const createStudent = async () => {
     }
 };
 
+//Updating a student
 const updateStudent = async () => {
     try {
         const average = ((parseFloat(englishgrades) + parseFloat(mathsgrades)) / 2).toFixed(2);
@@ -84,6 +96,7 @@ const updateStudent = async () => {
     }
 };
 
+//Deleting a student
 const deleteStudent = async (id) => {
     const studentToDelete = studentsdb.find(student => student.id === id);
     if (!studentToDelete) {
@@ -99,7 +112,7 @@ const deleteStudent = async (id) => {
         alert("We couldn't find the student you were trying to delete. Please refresh and try again.");
     }
 };
-
+// Reset form fields
   const resetForm = () => {
     setName("");
     setAge("");
@@ -112,6 +125,7 @@ const deleteStudent = async (id) => {
     setFormSubmitted(false);
   };
 
+  //Edit student details
   const editStudent = (student) => {
     setEdit(true);
     setName(student.name);
@@ -124,14 +138,16 @@ const deleteStudent = async (id) => {
     setUpdateId(student.id);
   };
 
+  //Handle invalid input
   const handleInvalid = (e) => {
     e.preventDefault();
     alert("Please enter only letters (A-Z, a-z) with a maximum of 15 characters.");
   };
 
+  //Handle form submission
   const handleSubmit = (event) => {
     event.preventDefault();
-    setFormSubmitted(true); // Set form submitted state to true
+    setFormSubmitted(true);
 
     // Check if all fields are filled
     if (name && age && englishgrades && mathsgrades && teachercomments && behaviour) {
@@ -144,6 +160,7 @@ const deleteStudent = async (id) => {
   <h1 className="text-4xl font-bold text-white mb-8">Asset Insights Student Management Center 👨‍🎓</h1>
 
   <div>
+  {/** Display student data **/}
   {loading ? (
     <h1 className="text-4xl">Student data is loading. Please wait...</h1>
   ) : (
@@ -190,7 +207,7 @@ const deleteStudent = async (id) => {
   <h2 className="text-2xl text-gray-800 font-bold mt-10">
     {updateId ? `Edit a Student - ${studentsdb.find(student => student.id === updateId)?.name}` : "Add a Student"}
   </h2>
-
+  {/** Form to add or edit student data **/}
   <form onSubmit={handleSubmit} className="flex flex-wrap justify-center gap-4 mt-4">
 
     <div className="relative">
@@ -291,6 +308,7 @@ const deleteStudent = async (id) => {
       )}
     </div>
 
+      {/** Display average grade **/}
     <button
       type="submit"
       className="bg-teal-500 text-white px-4 py-2 rounded-md hover:bg-teal-600"

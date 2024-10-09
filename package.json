@@ -4,15 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "next dev",
     "build": "next build",
-    "start": "node server.js",
-    "install:frontend": "cd frontend && npm install",
-    "install:backend": "npm install",
-    "start:frontend": "cd frontend && npm run build && npm start",
-    "start:backend": "node server.js",
-    "start:fullstack": "npm run install:frontend && npm run install:backend && npm run start:backend"
+    "start": "next start",
+    "lint": "next lint"
   },
   "keywords": [],
   "author": "",
