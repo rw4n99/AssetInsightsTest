@@ -17,6 +17,8 @@ export default function Home() {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const API_URL = process.env.API_URL || "http://localhost:5000";
+
   const getAverageGradeColor = (average) => {
     if (average >= 85) {
       return "text-green-500";
@@ -30,7 +32,7 @@ export default function Home() {
   const fetchStudents = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:5000/api/studentsdb");
+      const response = await axios.get(`${API_URL}/api/studentsdb`);
       setStudents(response.data);
     } catch (error) {
       console.error("Error fetching students:", error);
@@ -46,61 +48,61 @@ export default function Home() {
 
   const createStudent = async () => {
     try {
-      const average = ((parseFloat(englishgrades) + parseFloat(mathsgrades)) / 2).toFixed(2);
-      const response = await axios.post("http://localhost:5000/api/studentsdb", {
-        name,
-        age,
-        englishgrades,
-        mathsgrades,
-        teachercomments,
-        behaviour,
-        averagegrade: average,
-      });
-      setStudents([...studentsdb, response.data]);
-      alert(`Welcome aboard! ${name} has been registered.`);
-      resetForm();
+        const average = ((parseFloat(englishgrades) + parseFloat(mathsgrades)) / 2).toFixed(2);
+        const response = await axios.post(`${process.env.API_URL}/api/studentsdb`, {
+            name,
+            age,
+            englishgrades,
+            mathsgrades,
+            teachercomments,
+            behaviour,
+            averagegrade: average,
+        });
+        setStudents([...studentsdb, response.data]);
+        alert(`Welcome aboard! ${name} has been registered.`);
+        resetForm();
     } catch (error) {
-      console.error("Error creating student:", error);
-      alert("Oops! There was a problem adding the student. Please try again later.");
+        console.error("Error creating student:", error);
+        alert("Oops! There was a problem adding the student. Please try again later.");
     }
-  };
+};
 
-  const updateStudent = async () => {
+const updateStudent = async () => {
     try {
-      const average = ((parseFloat(englishgrades) + parseFloat(mathsgrades)) / 2).toFixed(2);
-      const response = await axios.put(`http://localhost:5000/api/studentsdb/${updateId}`, {
-        name,
-        age,
-        englishgrades,
-        mathsgrades,
-        teachercomments,
-        behaviour,
-        averagegrade: average,
-      });
-      setStudents(studentsdb.map(student => (student.id === updateId ? response.data : student)));
-      alert(`Changes saved for ${name}.`);
-      resetForm();
+        const average = ((parseFloat(englishgrades) + parseFloat(mathsgrades)) / 2).toFixed(2);
+        const response = await axios.put(`${process.env.API_URL}/api/studentsdb/${updateId}`, {
+            name,
+            age,
+            englishgrades,
+            mathsgrades,
+            teachercomments,
+            behaviour,
+            averagegrade: average,
+        });
+        setStudents(studentsdb.map(student => (student.id === updateId ? response.data : student)));
+        alert(`Changes saved for ${name}.`);
+        resetForm();
     } catch (error) {
-      console.error("Error updating student:", error);
-      alert("Sorry, we could not update details. Please check your input and try again.");
+        console.error("Error updating student:", error);
+        alert("Sorry, we could not update details. Please check your input and try again.");
     }
-  };
+};
 
-  const deleteStudent = async (id) => {
+const deleteStudent = async (id) => {
     const studentToDelete = studentsdb.find(student => student.id === id);
     if (!studentToDelete) {
-      alert("Student not found.");
-      return;
+        alert("Student not found.");
+        return;
     }
     try {
-      await axios.delete(`http://localhost:5000/api/studentsdb/${id}`);
-      setStudents(studentsdb.filter(student => student.id !== id));
-      alert(`${studentToDelete.name} has been removed from the records`);
+        await axios.delete(`${process.env.API_URL}/api/studentsdb/${id}`);
+        setStudents(studentsdb.filter(student => student.id !== id));
+        alert(`${studentToDelete.name} has been removed from the records`);
     } catch (error) {
-      console.error("Error deleting student:", error);
-      alert("We couldn\t find the student you were trying to delete. Please refresh and try again.");
+        console.error("Error deleting student:", error);
+        alert("We couldn't find the student you were trying to delete. Please refresh and try again.");
     }
-  };
+};
 
   const resetForm = () => {
     setName("");
