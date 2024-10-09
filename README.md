@@ -3,8 +3,19 @@
 
 Welcome to your role as a temporary admin assistant! You've been called in on short notice to help the school prepare for an Ofsted inspection. Your tasks are critical, and time is of the essence! Let's get started!
 
+## Prerequisites
+Before you begin the installation process, ensure you have the following installed on your machine:
+
+Node.js
+
+You need Node.js to run the backend server and manage package dependencies. Download it from nodejs.org and follow the installation instructions for your operating system.
+Version: Make sure to use Node.js version 14 or higher.
+npm (Node Package Manager)
+
+npm is included with Node.js installations. It is used to install packages and manage dependencies.
+You can check if npm is installed by running in the terminal: npm -v 
+
 ## Installation
-Make you you are in the correct working directory - AssetInsightsTest
 
 1. type into the terminal:
 npm install && node server.js
@@ -13,6 +24,12 @@ This will initialise the SQL database, currently hosted on Render, and make it r
 
 2. You should get a success message! This means the database is now ready to interact with! Follow this link to access the site:
    https://student-management-center.onrender.com/
+
+Optional if you have problems with step two:
+cd frontend
+npm install
+npm run build
+npm start
 
 **Please note** that I have left the .env file accessible. While this should never normally be done for security reasons, I have done so for this demo version for ease of setup. 
 
