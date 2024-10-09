@@ -19,6 +19,26 @@ export default function Home() {
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
+
+  //Sorting students by average grade
+const sortStudents = (key) => {
+  let direction = "asc";
+  if (sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+  }
+  setSortConfig({ key, direction });
+
+  const sortedData = [...studentsdb].sort((a, b) => {
+      if (direction === "asc") {
+          return a[key] > b[key] ? 1 : -1;
+      } else {
+          return a[key] < b[key] ? 1 : -1;
+      }
+  });
+  setStudents(sortedData);
+};
+
   //Assigning colors to average grades
   const getAverageGradeColor = (average) => {
     if (average >= 85) {
@@ -166,17 +186,29 @@ const deleteStudent = async (id) => {
   ) : (
     <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-md">
       <thead>
-        <tr className="bg-teal-400 text-white">
-          <th className="px-4 py-3">Name</th>
-          <th className="px-4 py-3">Age</th>
-          <th className="px-4 py-3">English Grades</th>
-          <th className="px-4 py-3">Maths Grades</th>
-          <th className="px-4 py-3">Teacher Comments</th>
-          <th className="px-4 py-3">Behaviour</th>
-          <th className="px-4 py-3">Average Grade</th>
-          <th className="px-4 py-3">Actions</th>
-        </tr>
-      </thead>
+    <tr className="bg-teal-400 text-white">
+        <th className="px-4 py-3 cursor-pointer" onClick={() => sortStudents("name")}>
+            Name {sortConfig.key === "name" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
+        </th>
+        <th className="px-4 py-3 cursor-pointer" onClick={() => sortStudents("age")}>
+            Age {sortConfig.key === "age" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
+        </th>
+        <th className="px-4 py-3 cursor-pointer" onClick={() => sortStudents("englishgrades")}>
+            English Grades {sortConfig.key === "englishgrades" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
+        </th>
+        <th className="px-4 py-3 cursor-pointer" onClick={() => sortStudents("mathsgrades")}>
+            Maths Grades {sortConfig.key === "mathsgrades" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
+        </th>
+        <th className="px-4 py-3">Teacher Comments</th>
+        <th className="px-4 py-3 cursor-pointer" onClick={() => sortStudents("behaviour")}>
+            Behaviour {sortConfig.key === "behaviour" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
+        </th>
+        <th className="px-4 py-3 cursor-pointer" onClick={() => sortStudents("averagegrade")}>
+            Average Grade {sortConfig.key === "averagegrade" ? (sortConfig.direction === "asc" ? "▲" : "▼") : ""}
+        </th>
+        <th className="px-4 py-3">Actions</th>
+      </tr>
+    </thead>
       <tbody>
         {studentsdb.map(student => (
           <tr key={student.id} className="border-b hover:bg-gray-100 transition duration-200">
