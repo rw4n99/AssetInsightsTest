@@ -25,13 +25,15 @@ This will initialise the SQL database, currently hosted on Render, and make it r
 2. You should get a success message! This means the database is now ready to interact with! Follow this link to access the site:
    https://student-management-center.onrender.com/
 
-Optional if you have problems with step two:
+Optional if you have problems with step two, please type into the terminal:
 cd frontend
+
 npm install
-npm run build
-npm start
+
+npm run dev
 
 **Please note** that I have left the .env file accessible. While this should never normally be done for security reasons, I have done so for this demo version for ease of setup. 
+If you have any problems with installation, feel free to email me: rowangodfrey2@gmail.com
 
 ## Tasks
 
